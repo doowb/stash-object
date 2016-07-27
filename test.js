@@ -60,7 +60,6 @@ describe('stash-object', function() {
     assert.deepEqual(optionsStash.obj, options);
     assert.deepEqual(optionsStash.stack, { default: { root: [{foo: 'FOO', bar: {baz: 'BAZ'}}] } });
 
-
     options.foo = 'foo';
     assert.deepEqual(optionsStash.obj, {foo: 'foo', bar: {baz: 'BAZ'}});
     assert.deepEqual(optionsStash.stack, { default: { root: [{foo: 'FOO', bar: {baz: 'BAZ'}}] } });
@@ -99,7 +98,6 @@ describe('stash-object', function() {
     optionsStash.stash('foo');
     assert.deepEqual(optionsStash.obj, options);
     assert.deepEqual(optionsStash.stack, { foo: { root: [{foo: 'FOO', bar: {baz: 'BAZ'}}] } });
-
 
     options.foo = 'foo';
     assert.deepEqual(optionsStash.obj, {foo: 'foo', bar: {baz: 'BAZ'}});
@@ -140,7 +138,6 @@ describe('stash-object', function() {
     assert.deepEqual(optionsStash.obj, options);
     assert.deepEqual(optionsStash.stack, { foo: { bar: [{baz: 'BAZ'}] } });
 
-
     options.bar.baz = 'baz';
     assert.deepEqual(optionsStash.obj, {foo: 'FOO', bar: {baz: 'baz'}});
     assert.deepEqual(optionsStash.stack, { foo: { bar: [{baz: 'BAZ'}] } });
@@ -179,7 +176,6 @@ describe('stash-object', function() {
     optionsStash.stash('foo', 'bar.baz');
     assert.deepEqual(optionsStash.obj, options);
     assert.deepEqual(optionsStash.stack, { foo: { 'bar.baz': [{beep: 'BOOP'}] } });
-
 
     options.bar.baz.beep = 'boop';
     assert.deepEqual(optionsStash.obj, {foo: 'FOO', bar: {baz: {beep: 'boop'}}});
