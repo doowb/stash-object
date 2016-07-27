@@ -5,7 +5,21 @@ var get = require('get-value');
 var set = require('set-value');
 var merge = require('merge-deep');
 
-module.exports = function(obj) {
+/**
+ * Create a new stash for an object.
+ * This will return an object with [.stash](#stash-1) and [.restore](#restore) methods used
+ * for stashing and restoring states of the original object.
+ *
+ * ```js
+ * var options = {};
+ * var optionStash = stash(options);
+ * ```
+ * @param  {Object} `obj` Object to use for original state.
+ * @return {Object} New instance used for stashing and restoring object state.
+ * @api public
+ */
+
+module.exports = function stash(obj) {
   if (typeof obj !== 'object') {
     throw new TypeError('expected "obj" to be an object');
   }
@@ -32,7 +46,7 @@ function Stash(obj) {
  * @param  {String} `name` Name of the stack to push the object state onto.
  * @param  {String|Array} `prop` Optional property path to stash
  * @return {Object} `this` for chaining
- * @api publich
+ * @api public
  */
 
 Stash.prototype.stash = function(name, prop) {
