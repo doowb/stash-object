@@ -22,13 +22,13 @@
     "state"
   ],
   "devDependencies": {
+    "gulp-format-md": "^0.1.9",
     "mocha": "^2.5.3"
   },
   "dependencies": {
+    "clone-deep": "^0.2.4",
     "define-property": "^0.2.5",
     "get-value": "^2.0.6",
-    "has-value": "^0.3.1",
-    "merge-deep": "^3.0.0",
     "set-value": "^0.3.3"
   },
   "verb": {
@@ -45,7 +45,7 @@
     "related": {
       "list": [
         "get-value",
-        "merge-deep",
+        "clone-deep",
         "set-value"
       ]
     },

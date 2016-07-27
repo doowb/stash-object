@@ -3,7 +3,7 @@
 var define = require('define-property');
 var get = require('get-value');
 var set = require('set-value');
-var merge = require('merge-deep');
+var clone = require('clone-deep');
 
 /**
  * Create a new stash for an object.
@@ -53,7 +53,7 @@ Stash.prototype.stash = function(name, prop) {
   name = name || 'default';
   if (!prop || prop.length === 0) {
     createStack(this.stack, name, 'root');
-    this.stack[name].root.push(merge(this.obj));
+    this.stack[name].root.push(clone(this.obj));
     return this;
   }
   var key = Array.isArray(prop) ? prop.join('.') : prop;
@@ -61,7 +61,7 @@ Stash.prototype.stash = function(name, prop) {
 
   var val = get(this.obj, prop);
   if (typeof val === 'object' && !Array.isArray(val)) {
-    val = merge(val);
+    val = clone(val);
   }
   this.stack[name][key].push(val);
   return this;
