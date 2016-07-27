@@ -22,7 +22,11 @@
     "state"
   ],
   "devDependencies": {
+    "gulp": "github:gulpjs/gulp#4.0",
+    "gulp-eslint": "^3.0.1",
     "gulp-format-md": "^0.1.9",
+    "gulp-istanbul": "^1.0.0",
+    "gulp-mocha": "^2.2.0",
     "mocha": "^2.5.3"
   },
   "dependencies": {
