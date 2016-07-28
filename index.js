@@ -28,9 +28,6 @@ module.exports = function stash(obj) {
 };
 
 function Stash(obj) {
-  if (!(this instanceof Stash)) {
-    return new Stash(obj);
-  }
   define(this, 'obj', obj);
   define(this, 'stack', {});
 }

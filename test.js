@@ -70,6 +70,26 @@ describe('stash-object', function() {
     assert.deepEqual(optionsStash.stack, { default: { root: [] } });
   });
 
+  it('should return the entire object when nothing is stashed', function() {
+    var options = {
+      foo: 'FOO',
+      bar: {baz: 'BAZ'}
+    };
+
+    var optionsStash = stash(options);
+    assert.deepEqual(optionsStash.obj, options);
+    assert.deepEqual(optionsStash.stack, {});
+
+    options.foo = 'foo';
+    assert.deepEqual(optionsStash.obj, {foo: 'foo', bar: {baz: 'BAZ'}});
+    assert.deepEqual(optionsStash.stack, {});
+
+    options = optionsStash.restore();
+    assert.deepEqual(options, {foo: 'foo', bar: {baz: 'BAZ'}});
+    assert.deepEqual(optionsStash.obj, {foo: 'foo', bar: {baz: 'BAZ'}});
+    assert.deepEqual(optionsStash.stack, { default: { root: [] } });
+  });
+
   it('should stash the entire object on a named stack', function() {
     var options = {
       foo: 'FOO',
@@ -148,6 +168,67 @@ describe('stash-object', function() {
     assert.deepEqual(optionsStash.stack, { foo: { bar: [] } });
   });
 
+  it('should return the object when the specified property has not been stashed', function() {
+    var options = {
+      foo: 'FOO',
+      bar: {baz: 'BAZ'}
+    };
+
+    var optionsStash = stash(options);
+    assert.deepEqual(optionsStash.obj, options);
+    assert.deepEqual(optionsStash.stack, {});
+
+    options.bar.baz = 'baz';
+    assert.deepEqual(optionsStash.obj, {foo: 'FOO', bar: {baz: 'baz'}});
+    assert.deepEqual(optionsStash.stack, {});
+
+    options = optionsStash.restore('foo', 'bar');
+    assert.deepEqual(options, {foo: 'FOO', bar: {baz: 'baz'}});
+    assert.deepEqual(optionsStash.obj, {foo: 'FOO', bar: {baz: 'baz'}});
+    assert.deepEqual(optionsStash.stack, { foo: { bar: [] } });
+  });
+
+  it('should stash a non-object property from the object on a named stack', function() {
+    var options = {
+      foo: 'FOO',
+      bar: {baz: 'BAZ'},
+      baz: 'qux'
+    };
+
+    var optionsStash = stash(options);
+    assert.deepEqual(optionsStash.obj, options);
+    assert.deepEqual(optionsStash.stack, {});
+
+    optionsStash.stash('foo', 'baz');
+    assert.deepEqual(optionsStash.obj, options);
+    assert.deepEqual(optionsStash.stack, { foo: { 'baz': ['qux'] } });
+  });
+
+  it('should restore a non-object property from the object from a named stash', function() {
+    var options = {
+      foo: 'FOO',
+      bar: {baz: 'BAZ'},
+      baz: 'qux'
+    };
+
+    var optionsStash = stash(options);
+    assert.deepEqual(optionsStash.obj, options);
+    assert.deepEqual(optionsStash.stack, {});
+
+    optionsStash.stash('foo', 'baz');
+    assert.deepEqual(optionsStash.obj, options);
+    assert.deepEqual(optionsStash.stack, { foo: { baz: ['qux'] } });
+
+    options.baz = 'bang';
+    assert.deepEqual(optionsStash.obj, {foo: 'FOO', bar: {baz: 'BAZ'}, baz: 'bang'});
+    assert.deepEqual(optionsStash.stack, { foo: { baz: ['qux'] } });
+
+    options = optionsStash.restore('foo', 'baz');
+    assert.deepEqual(options, {foo: 'FOO', bar: {baz: 'BAZ'}, baz: 'qux'});
+    assert.deepEqual(optionsStash.obj, {foo: 'FOO', bar: {baz: 'BAZ'}, baz: 'qux'});
+    assert.deepEqual(optionsStash.stack, { foo: { baz: [] } });
+  });
+
   it('should stash a property path from the object on a named stack', function() {
     var options = {
       foo: 'FOO',
@@ -182,6 +263,45 @@ describe('stash-object', function() {
     assert.deepEqual(optionsStash.stack, { foo: { 'bar.baz': [{beep: 'BOOP'}] } });
 
     options = optionsStash.restore('foo', 'bar.baz');
+    assert.deepEqual(options, {foo: 'FOO', bar: {baz: {beep: 'BOOP'}}});
+    assert.deepEqual(optionsStash.obj, {foo: 'FOO', bar: {baz: {beep: 'BOOP'}}});
+    assert.deepEqual(optionsStash.stack, { foo: { 'bar.baz': [] } });
+  });
+
+  it('should stash a property path array from the object on a named stack', function() {
+    var options = {
+      foo: 'FOO',
+      bar: {baz: {beep: 'BOOP'}}
+    };
+
+    var optionsStash = stash(options);
+    assert.deepEqual(optionsStash.obj, options);
+    assert.deepEqual(optionsStash.stack, {});
+
+    optionsStash.stash('foo', ['bar', 'baz']);
+    assert.deepEqual(optionsStash.obj, options);
+    assert.deepEqual(optionsStash.stack, { foo: { 'bar.baz': [{beep: 'BOOP'}] } });
+  });
+
+  it('should restore a property path array from the object from a named stash', function() {
+    var options = {
+      foo: 'FOO',
+      bar: {baz: {beep: 'BOOP'}}
+    };
+
+    var optionsStash = stash(options);
+    assert.deepEqual(optionsStash.obj, options);
+    assert.deepEqual(optionsStash.stack, {});
+
+    optionsStash.stash('foo', ['bar', 'baz']);
+    assert.deepEqual(optionsStash.obj, options);
+    assert.deepEqual(optionsStash.stack, { foo: { 'bar.baz': [{beep: 'BOOP'}] } });
+
+    options.bar.baz.beep = 'boop';
+    assert.deepEqual(optionsStash.obj, {foo: 'FOO', bar: {baz: {beep: 'boop'}}});
+    assert.deepEqual(optionsStash.stack, { foo: { 'bar.baz': [{beep: 'BOOP'}] } });
+
+    options = optionsStash.restore('foo', ['bar', 'baz']);
     assert.deepEqual(options, {foo: 'FOO', bar: {baz: {beep: 'BOOP'}}});
     assert.deepEqual(optionsStash.obj, {foo: 'FOO', bar: {baz: {beep: 'BOOP'}}});
     assert.deepEqual(optionsStash.stack, { foo: { 'bar.baz': [] } });
